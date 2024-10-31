@@ -31,7 +31,7 @@ export interface IAPI extends IModule {
    */
   send_group_msg: (
     message: Message,
-    group_id: number, 
+    group_id: number,
     auto_escape?: boolean
   ) => Promise<{
     message_id: number
@@ -91,7 +91,7 @@ export interface IAPI extends IModule {
    * @returns Promise 返回合并转发的消息内容
    */
   get_forward_msg: (id: string) => Promise<{
-    message: NodeSegment[]  
+    message: NodeSegment[]
   }>
 
   /**
@@ -121,7 +121,7 @@ export interface IAPI extends IModule {
    */
   set_group_ban: (
     group_id: number,
-    user_id: number, 
+    user_id: number,
     duration?: number
   ) => Promise<void>
 
@@ -140,7 +140,7 @@ export interface IAPI extends IModule {
       anonymous?: object,
       anonymous_flag?: string,
       flag?: string,
-      duration?: number  
+      duration?: number
     }
   ) => Promise<void>
 
@@ -173,7 +173,7 @@ export interface IAPI extends IModule {
    */
   set_group_anonymous: (
     group_id: number,
-    enable?: boolean  
+    enable?: boolean
   ) => Promise<void>
 
   /**
@@ -229,9 +229,9 @@ export interface IAPI extends IModule {
    * @param remark 添加后的好友备注（仅在同意时有效）
    */
   set_friend_add_request: (
-    flag: string,  
-    approve?: boolean, 
-    remark?: string  
+    flag: string,
+    approve?: boolean,
+    remark?: string
   ) => Promise<void>
 
   /**
@@ -244,8 +244,8 @@ export interface IAPI extends IModule {
   set_group_add_request: (
     flag: string,
     sub_type: 'add' | 'invite',
-    approve?: boolean, 
-    reason?: string  
+    approve?: boolean,
+    reason?: string
   ) => Promise<void>
 
   /**
@@ -256,7 +256,7 @@ export interface IAPI extends IModule {
    */
   get_login_info: () => Promise<{
     user_id: number,
-    nickname: string  
+    nickname: string
   }>
 
   /**
@@ -324,7 +324,7 @@ export interface IAPI extends IModule {
     group_id: number,
     group_name: string,
     member_count: number,
-    max_member_count: number  
+    max_member_count: number
   }>>
 
   /**
@@ -454,7 +454,7 @@ export interface IAPI extends IModule {
    * @returns Promise 返回 CSRF Token
    */
   get_csrf_token: () => Promise<{
-    token: number  
+    token: number
   }>
 
   /**
@@ -483,7 +483,7 @@ export interface IAPI extends IModule {
    * @returns Promise 返回下载后的图片文件路径
    */
   get_image: (file: string) => Promise<{
-    file: string  
+    file: string
   }>
 
   /**
@@ -499,7 +499,7 @@ export interface IAPI extends IModule {
    * @returns Promise 返回是否可以发送语音
    */
   can_send_record: () => Promise<{
-    yes: boolean  
+    yes: boolean
   }>
 
   /**
@@ -518,7 +518,7 @@ export interface IAPI extends IModule {
    */
   get_version_info: () => Promise<{
     app_name: string,
-    app_version: string, 
+    app_version: string,
     protocol_version: string,
     [key: string]: any
   }>
