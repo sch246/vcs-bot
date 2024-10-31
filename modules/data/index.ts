@@ -25,13 +25,13 @@ export function init(core: ICore): IData {
       queueMap.clear();  // 清理队列
       console.log('Module "data" unloaded');
     },
-    get: async function(key: string, genDefault: () => any = Object) {
+    get: async function<T = any>(key: string, genDefault: () => T = Object): Promise<T> {
       if (dataMap.has(key)) {
         return dataMap.get(key)
       }
-    
+
       const filePath = path.join(DATA_DIR, `${key}.yaml`);
-    
+
       // 尝试读取文件
       if (await fs.pathExists(filePath)) {
         // 读取错误就抛出异常吧

@@ -3,7 +3,10 @@
 import fs from 'fs';
 import path from 'path';
 import { ICore, IModule } from './types';
-import { exit } from 'process';
+
+function getTimeoutPromise(timeout: number): Promise<void> {
+  return new Promise<void>(resolve => setTimeout(resolve, timeout));
+}
 
 export class ModuleLoader {
   private modulesPath: string;
@@ -11,24 +14,30 @@ export class ModuleLoader {
 
   constructor(modulesPath: string) {
     this.modulesPath = modulesPath;
-    const cleanup = () => {
-      this.unloadAllModules().catch(err => {
-        console.error('Error unloading modules:', err);
-      });
-    };
     // 处理程序以确保在退出时卸载所有模块
-    process.on('exit', cleanup);
-    process.on('SIGINT', cleanup);
-    process.on('SIGTERM', cleanup);
-    process.on('uncaughtException', (err) => {
+    this.setupCleanupHandlers();
+  }
+
+  async exit(exitCode: number, timeout: number = 5000) {
+    await Promise.race([
+      this.cleanup().then(() => {
+        console.log('bye.');
+      }),
+      getTimeoutPromise(timeout).then(() => {
+        console.warn(`Cleanup timed out after ${timeout}ms, forcing exit...`);
+        process.exit(exitCode);
+      }),
+    ]);
+  }
+
+  private setupCleanupHandlers() {
+
+    process.on('beforeExit', () => this.cleanup());
+    process.on('SIGINT', () => this.exit(0));
+    process.on('SIGTERM', () => this.exit(0));
+    process.on('uncaughtException', async (err) => {
       console.error('Uncaught exception:', err);
-      this.unloadAllModules()
-      .catch(err => {
-        console.error('Error unloading modules:', err);
-      })
-      .finally(() => {
-        exit(1);
-      });
+      await this.exit(1);
     });
   }
 
@@ -67,9 +76,17 @@ export class ModuleLoader {
     await this.loadModule(core, moduleName);
   }
 
-  async unloadAllModules(): Promise<void> {
-    await Promise.all(Array.from(this.loadedModules.keys())
+  // 不会报错
+  async cleanup(): Promise<void> {
+    console.log('Starting cleanup...');
+    const result = await Promise.allSettled(Array.from(this.loadedModules.keys())
                             .map(k => this.unloadModule(k)));
+
+    const failures = result.filter(r => r.status === 'rejected');
+    if (failures.length > 0) {
+      console.error(`Failed to unload ${failures.length} modules:`, failures);
+    }
+    console.log('Cleanup completed');
   }
 
   getModule(moduleName: string): IModule {

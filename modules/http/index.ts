@@ -50,6 +50,9 @@ export function init(core: ICore): IHTTP {
     },
 
     unload: async function () {
+      // 卸载配置
+      core.get<IData>("data").save("http", true);
+
       if (server) {
         server.close();
       }
