@@ -1,3 +1,5 @@
+// modules/http/types/event/notice.ts
+
 import { BaseEvent } from '../base'
 
 export interface GroupUploadEvent extends BaseEvent {

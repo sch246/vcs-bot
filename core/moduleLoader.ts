@@ -18,30 +18,19 @@ export class ModuleLoader {
     this.setupCleanupHandlers();
   }
 
-  async exit(exitCode: number, timeout: number = 5000) {
-    await Promise.race([
-      this.cleanup().then(() => {
-        console.log('bye.');
-      }),
-      getTimeoutPromise(timeout).then(() => {
-        console.warn(`Cleanup timed out after ${timeout}ms, forcing exit...`);
-        process.exit(exitCode);
-      }),
-    ]);
+  get<T extends IModule>(moduleName: string): T {
+    const module = this.loadedModules.get(moduleName)
+    if (!module) {
+      throw new Error(`Module ${moduleName} is not loaded`);
+    }
+    return module as T;
   }
 
-  private setupCleanupHandlers() {
-
-    process.on('beforeExit', () => this.cleanup());
-    process.on('SIGINT', () => this.exit(0));
-    process.on('SIGTERM', () => this.exit(0));
-    process.on('uncaughtException', async (err) => {
-      console.error('Uncaught exception:', err);
-      await this.exit(1);
-    });
+  list(): Map<string, IModule> {
+    return this.loadedModules
   }
 
-  async loadModule(core: ICore, moduleName: string): Promise<void> {
+  async load(core: ICore, moduleName: string): Promise<void> {
     if (this.loadedModules.has(moduleName)) {
       return;
     }
@@ -59,7 +48,7 @@ export class ModuleLoader {
     this.loadedModules.set(moduleName, module);
   }
 
-  async unloadModule(moduleName: string): Promise<void> {
+  async unload(moduleName: string): Promise<void> {
     const module = this.loadedModules.get(moduleName);
     if (!module) {
       throw new Error(`Module ${moduleName} is not loaded`);
@@ -69,18 +58,29 @@ export class ModuleLoader {
     this.loadedModules.delete(moduleName);
   }
 
-  async reloadModule(core: ICore, moduleName: string): Promise<void> {
+  async reload(core: ICore, moduleName: string): Promise<void> {
     if (this.loadedModules.has(moduleName)) {
-      await this.unloadModule(moduleName);
+      await this.unload(moduleName);
     }
-    await this.loadModule(core, moduleName);
+    await this.load(core, moduleName);
+  }
+
+  private setupCleanupHandlers() {
+
+    process.on('beforeExit', () => this.unloadAll());
+    process.on('SIGINT', () => this.exit(0));
+    process.on('SIGTERM', () => this.exit(0));
+    process.on('uncaughtException', async (err) => {
+      console.error('Uncaught exception:', err);
+      await this.exit(1);
+    });
   }
 
   // 不会报错
-  async cleanup(): Promise<void> {
+  async unloadAll(): Promise<void> {
     console.log('Starting cleanup...');
     const result = await Promise.allSettled(Array.from(this.loadedModules.keys())
-                            .map(k => this.unloadModule(k)));
+                            .map(k => this.unload(k)));
 
     const failures = result.filter(r => r.status === 'rejected');
     if (failures.length > 0) {
@@ -89,15 +89,15 @@ export class ModuleLoader {
     console.log('Cleanup completed');
   }
 
-  getModule(moduleName: string): IModule {
-    const module = this.loadedModules.get(moduleName)
-    if (!module) {
-      throw new Error(`Module ${moduleName} is not loaded`);
-    }
-    return module;
-  }
-
-  getModules(): Map<string, IModule> {
-    return this.loadedModules
+  async exit(exitCode: number, timeout: number = 5000) {
+    await Promise.race([
+      this.unloadAll().then(() => {
+        console.log('bye.');
+      }),
+      getTimeoutPromise(timeout).then(() => {
+        console.warn(`Cleanup timed out after ${timeout}ms, forcing exit...`);
+      }),
+    ]);
+    process.exit(exitCode);
   }
 }

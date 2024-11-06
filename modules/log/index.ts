@@ -5,7 +5,7 @@ import * as path from 'path';
 import { ICore } from '../../core/types';
 import { ILog } from './types';
 import { IData } from '../data/types'
-import { Event, MessageEvent, NoticeEvent, RequestEvent, MetaEvent } from '../api/types'
+import { Event, MessageEvent, NoticeEvent, RequestEvent, MetaEvent } from '../http/types'
 
 export function init(core: ICore): ILog {
   return {

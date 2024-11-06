@@ -15,7 +15,7 @@ async function loadModules(core: Core, modulesDir: string): Promise<void> {
     }
   }
 
-  console.log(`loaded: ${[...core.getModules().keys()]}`);
+  console.log(`loaded: ${[...core.list().keys()]}`);
 }
 
 

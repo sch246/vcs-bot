@@ -1,3 +1,5 @@
+// modules/http/types/event/message.ts
+
 import { ArrayMessage } from '../message'
 import { BaseEvent, PrivateSender, GroupSender } from '../base';
 

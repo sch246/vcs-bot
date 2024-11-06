@@ -29,11 +29,12 @@ export function init(core: ICore): IHTTP {
           req.on('end', () => {
             try {
               const event = JSON.parse(body);
-              // 触发对应的事件
-              core.emit(event.post_type, event);
+              // 触发 http 事件
+              core.emit("http", this, event);
             } catch (error) {
               console.error('Error parsing event:', error);
             }
+            res.writeHead(204);
             res.end('Event received');
           });
         } else {
@@ -55,11 +56,12 @@ export function init(core: ICore): IHTTP {
 
       if (server) {
         server.close();
+        console.log('HTTP server shut down');
       }
       console.log('Module "http" unloaded');
     },
 
-    call: async function (apiName: string, data:{ [key: string]: any }) {
+    call: async function (apiName: string, data:{ [key: string]: any } = {}): Promise<any> {
       const options = {
         hostname: 'localhost',
         port: this.config.post,

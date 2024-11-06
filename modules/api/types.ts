@@ -1,10 +1,8 @@
 // modules/api/types.ts
 
 import { IModule } from '../../core/types';
-import { honerOne, Sender, Status } from './types/base';
-import { ArrayMessage, Message, NodeSegment } from './types/message';
-export * from './types/message'
-export * from './types/event'
+import { honerOne, Sender, Status } from '../http/types/base';
+import { ArrayMessage, Message, NodeSegment } from '../http/types/message';
 
 export interface IAPI extends IModule {
   /**

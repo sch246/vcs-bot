@@ -43,6 +43,6 @@ export interface Status {
 export interface honerOne {
   user_id: number,
   nickname: string,
-  avatar: string, 
+  avatar: string,
   description: string
 }

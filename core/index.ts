@@ -1,81 +1,42 @@
 // core/index.ts
 
-import { EventEmitter } from 'events';
 import { ICore, IModule } from './types';
 import { ModuleLoader } from './moduleLoader';
+import { EventHandler } from './eventHandler';
 
-export class Core implements ICore {
+export class Core extends EventHandler implements ICore {
   private moduleLoader: ModuleLoader;
-  private eventEmitter: EventEmitter;
 
   constructor(modulesPath: string) {
+    super()
     this.moduleLoader = new ModuleLoader(modulesPath);
-    this.eventEmitter = new EventEmitter();
   }
 
   get<T extends IModule>(moduleName: string): T {
-    return this.moduleLoader.getModule(moduleName) as T;
+    return this.moduleLoader.get(moduleName) as T;
   }
 
-  getModules(): Map<string, IModule> {
-    return this.moduleLoader.getModules()
+  list(): Map<string, IModule> {
+    return this.moduleLoader.list()
   }
 
   async load(moduleName: string): Promise<void> {
-    await this.moduleLoader.loadModule(this, moduleName);
+    await this.moduleLoader.load(this, moduleName);
   }
 
   async unload(moduleName: string): Promise<void> {
-    await this.moduleLoader.unloadModule(moduleName);
+    await this.moduleLoader.unload(moduleName);
+  }
+
+  async reload(moduleName: string): Promise<void> {
+    await this.moduleLoader.reload(this, moduleName);
   }
 
   async unloadAll(): Promise<void> {
-    await this.moduleLoader.cleanup()
+    await this.moduleLoader.unloadAll()
   }
 
   async exit(exitCode: number, timeout: number = 5000): Promise<void> {
     await this.moduleLoader.exit(exitCode, timeout)
-  }
-
-  emit(eventName: string, ...args: any[]): void {
-    this.eventEmitter.emit(eventName, ...args);
-  }
-
-  on(eventName: string, listener: (...args: any[]) => void): void {
-    this.eventEmitter.on(eventName, listener);
-  }
-
-  off(eventName: string, listener: (...args: any[]) => void): void {
-    this.eventEmitter.off(eventName, listener);
-  }
-
-  once(eventName: string, listener: (...args: any[]) => void): void {
-    this.eventEmitter.once(eventName, listener);
-  }
-
-  before(eventName: string, listener: (...args: any[]) => void): void {
-    this.eventEmitter.prependListener(eventName, listener);
-  }
-
-  onceBefore(eventName: string, listener: (...args: any[]) => void): void {
-    this.eventEmitter.prependOnceListener(eventName, listener);
-  }
-
-  // 与 on 相同
-  addListener(eventName: string, listener: (...args: any[]) => void): void {
-    this.eventEmitter.addListener(eventName, listener);
-  }
-
-  // 与 off 相同
-  removeListener(eventName: string, listener: (...args: any[]) => void): void {
-    this.eventEmitter.removeListener(eventName, listener);
-  }
-
-  removeListeners(eventName: string): void {
-    this.eventEmitter.removeAllListeners(eventName);
-  }
-
-  eventNames(): (string | symbol)[] {
-    return this.eventEmitter.eventNames()
   }
 }

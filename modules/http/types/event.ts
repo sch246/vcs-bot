@@ -1,4 +1,4 @@
-// modules/api/types/event.ts
+// modules/http/types/event.ts
 
 export * from './event/message'
 export * from './event/notice'

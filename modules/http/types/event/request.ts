@@ -1,3 +1,5 @@
+// modules/http/types/event/request.ts
+
 import { BaseEvent } from '../base'
 
 export interface RequestFriend extends BaseEvent {

@@ -1,6 +1,11 @@
 // modules/bot/types.ts
 
-import { IModule } from '../../core/types';
+import { ICore, IModule } from '../../core/types';
+import { Area } from '../context/types';
 
-export interface IBot extends IModule {
+export interface IBot extends IModule, Area {
+  config: {
+    saveLog: boolean;
+    qq: number;
+  };
 }

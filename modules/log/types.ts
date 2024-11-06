@@ -1,7 +1,7 @@
 // modules/log/types.ts
 
 import { IModule } from '../../core/types';
-import { Event } from '../api/types';
+import { Event } from '../http/types';
 
 export interface ILog extends IModule {
   log: (area: string, message: any) => void;

@@ -1,4 +1,4 @@
-// modules/api/types/message.ts
+// modules/http/types/message.ts
 
 // 基础消息段接口
 export interface MessageSegment {
