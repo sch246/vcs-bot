@@ -30,17 +30,17 @@ class Bot extends EventHandler implements IBot {
 
   private async test(event: MessageEvent) {
     const api = core.get<IAPI>('api');
-    if (event.raw_message===".test"){
+    if (event.raw_message===".test") {
       if (event.message_type === 'private') {
         console.log(await api.send_msg('测试消息！', {
-          user_id: event.user_id
-        }))
+          user_id: event.user_id,
+        }));
       } else if (event.message_type === 'group') {
         console.log(await api.send_msg('测试消息！', {
-          group_id: event.group_id
-        }))
+          group_id: event.group_id,
+        }));
       }
-    } else if (event.raw_message===".qq"){
+    } else if (event.raw_message===".qq") {
       api.send_msg(`qq是: ${this.config.qq}`, event)
     }
   }

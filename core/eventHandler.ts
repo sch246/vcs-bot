@@ -1,8 +1,9 @@
 // core/index.ts
 
 import { EventEmitter } from 'events';
+import { IEventHandler } from './types';
 
-export class EventHandler {
+export class EventHandler implements IEventHandler {
   private eventEmitter: EventEmitter;
 
   constructor() {
