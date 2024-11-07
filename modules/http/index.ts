@@ -1,7 +1,7 @@
 // modules/http/index.ts
 
 import { ICore } from '../../core/types';
-import { IHTTP } from './types';
+import { Event, IHTTP } from './types';
 import * as http from 'http';
 import { IData } from '../data/types'
 
@@ -28,9 +28,10 @@ export function init(core: ICore): IHTTP {
           });
           req.on('end', () => {
             try {
-              const event = JSON.parse(body);
+              const event = JSON.parse(body) as Event;
               // 触发 http 事件
-              core.emit("http", this, event);
+              // core.emit("http", this, event);
+              core.emit(event.post_type, this, event);
             } catch (error) {
               console.error('Error parsing event:', error);
             }
